@@ -4,35 +4,35 @@
 
 #### 1. **App**
 
-* Контейнер приложения.
-* Хранит состояние боя (`EncounterState`).
-* Передаёт данные дочерним компонентам.
+- Контейнер приложения.
+- Хранит состояние боя (`EncounterState`).
+- Передаёт данные дочерним компонентам.
 
 #### 2. **Header**
 
-* Кнопки: `Prev`, `Next`, `Add`.
-* Отображает номер раунда.
-* Вызовы: `onNext()`, `onPrev()`, `onAdd()`.
+- Кнопки: `Prev`, `Next`, `Add`.
+- Отображает номер раунда.
+- Вызовы: `onNext()`, `onPrev()`, `onAdd()`.
 
 #### 3. **CombatantList**
 
-* Принимает массив `combatants`, `activeIndex`.
-* Отображает список карточек `CombatantCard`.
-* Сортирует по инициативе (init ↓).
-* Подсвечивает активного.
+- Принимает массив `combatants`, `activeIndex`.
+- Отображает список карточек `CombatantCard`.
+- Сортирует по инициативе (init ↓).
+- Подсвечивает активного.
 
 #### 4. **CombatantCard**
 
-* Отображает данные:
+- Отображает данные:
+  - `name`, `init`, `hp`, `ac`, `conditions`, `isPlayer`, `defeated`.
 
-  * `name`, `init`, `hp`, `ac`, `conditions`, `isPlayer`, `defeated`.
-* Кнопки: `+HP`, `-HP`, `✎` (редактировать), `☠️` (пометить defeated).
-* Клик по карточке делает её активной.
+- Кнопки: `+HP`, `-HP`, `✎` (редактировать), `☠️` (пометить defeated).
+- Клик по карточке делает её активной.
 
 #### 5. **AddEditModal**
 
-* Поля: `name`, `init`, `hp`, `ac`, `isPlayer`, `conditions`.
-* Действия: `onSave()`, `onCancel()`.
+- Поля: `name`, `init`, `hp`, `ac`, `isPlayer`, `conditions`.
+- Действия: `onSave()`, `onCancel()`.
 
 ### Типы данных
 
@@ -57,12 +57,13 @@ type EncounterState = {
 
 ### Логика
 
-* При `Next` активный индекс ++, при `Prev` --.
-* Если индекс > последнего → `round++` и индекс = 0.
-* `Add` открывает модал с пустыми полями.
-* Изменения сохраняются в `localStorage` при каждом действии.
-* `CombatantList` обновляется при любом изменении данных.
+- При `Next` активный индекс ++, при `Prev` --.
+- Если индекс > последнего → `round++` и индекс = 0.
+- `Add` открывает модал с пустыми полями.
+- Изменения сохраняются в `localStorage` при каждом действии.
+- `CombatantList` обновляется при любом изменении данных.
 
+```ts
 // Пропсы компонентов трекера инициативы D&D
 // Русские описания в JSDoc над каждым пропсом.
 
@@ -181,3 +182,4 @@ export interface AddEditModalProps {
 
 export type UpdateCombatantById = (id: string, patch: Partial<Combatant>) => void;
 export type SelectCombatantById = (id: string) => void;
+```

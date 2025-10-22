@@ -1,0 +1,68 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  border-color: black;
+  background-color: rgb(207, 191, 191);
+  height: 50px;
+  justify-content: space-between;
+  padding: 10px 10px;
+}
+
+.headerIMG {
+  height: 30px;
+  display: flex;
+  padding: 0px 0px 10px;
+}
+.headerLogo {
+  display: flex;
+  flex-direction: row;
+  margin: 5px 5px;
+  gap: 10px;
+}
+.li {
+  display: flex;
+  background-color: antiquewhite;
+  margin: 10px 10px;
+}
+
+.button {
+  background-color: rgb(113, 145, 145);
+  padding: 10px 10px;
+  margin: 10px 10px;
+  border-radius: 5px;
+}
+.button:disabled {
+  cursor: not-allowed;
+}
+.buttonActive {
+  background-color: rgb(49, 80, 80);
+  padding: 10px 10px;
+  margin: 10px 10px;
+  border-radius: 5px;
+}
+
+.h3 {
+  display: flex;
+  justify-self: center;
+}
+
+.bubuttons {
+  display: flex;
+  justify-content: center;
+}
+
+.p {
+  display: flex;
+}
+
+.Collapse {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 20px 20px;
+}
+.CollapseItem {
+  display: none;
+}
+.CollapseItemTrue {
+  display: block;
+}
