@@ -18,7 +18,7 @@ export const CombatCard: React.FC<CombatCardProps> = ({
   defeated: propDefeated = false,
   hp: healthHP = 100,
   conditions,
-  isPlayer,
+
   ac,
   init,
   name,
@@ -50,12 +50,12 @@ export const CombatCard: React.FC<CombatCardProps> = ({
   return (
     <>
       <div>{name}</div>
-      <button onClick={isEdit}>
+      <button type="button" onClick={isEdit}>
         <ThemeIcon color="teal" size={24} radius="xl">
           <IconBallpenFilled size={16} />
         </ThemeIcon>
       </button>
-      <button onClick={toggleDefeated}>
+      <button type="button" onClick={toggleDefeated}>
         <ThemeIcon color={defeated ? 'red' : 'teal'} size={24} radius="xl">
           <IconSkull size={16} />
         </ThemeIcon>
@@ -64,13 +64,13 @@ export const CombatCard: React.FC<CombatCardProps> = ({
       <div>
         <div>Initiative: {init}</div>
 
-        <button onClick={() => hendlerHP('increase')}>
+        <button type="button" onClick={() => hendlerHP('increase')}>
           <ThemeIcon size={24} radius="xl">
             <IconPlus size={16} />
           </ThemeIcon>
         </button>
         <div>HP: {health}</div>
-        <button onClick={() => hendlerHP('decrease')}>
+        <button type="button" onClick={() => hendlerHP('decrease')}>
           <ThemeIcon size={24} radius="xl">
             <IconMinus size={16} />
           </ThemeIcon>

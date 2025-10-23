@@ -1,14 +1,5 @@
-import { ReactNode, useEffect, useState } from 'react';
-import {
-  Button,
-  Fieldset,
-  Modal,
-  NumberInput,
-  Slider,
-  Switch,
-  Text,
-  TextInput,
-} from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { Fieldset, Modal, NumberInput, Slider, Switch, Text, TextInput } from '@mantine/core';
 
 export interface Player {
   id: number;
@@ -67,9 +58,9 @@ export const Modalwindow: React.FC<ModalProps> = ({ opened, onSave, onClose, pla
       name: name.trim(),
       init: initiative,
       hp: health,
-      ac: ac,
+      ac,
       conditions: status.trim(),
-      isPlayer: isPlayer,
+      isPlayer,
       defeated: player?.defeated || false,
     };
 
@@ -89,48 +80,48 @@ export const Modalwindow: React.FC<ModalProps> = ({ opened, onSave, onClose, pla
   return (
     <>
       <Modal opened={opened} onClose={handleClose}>
-        {
-          <>
-            <Fieldset legend="Personal information">
-              <TextInput
-                value={name}
-                onChange={(event) => setName(event.currentTarget.value)}
-                label="Your name"
-                placeholder="Your name"
-              />
-              <NumberInput
-                value={ac}
-                onChange={(value) => setAc(Number(value) || 0)}
-                variant="filled"
-                size="xs"
-                radius="md"
-                label="класс брони"
-                description="AC"
-              />
-              <TextInput
-                value={status}
-                onChange={(event) => setStatus(event.currentTarget.value)}
-                label="Состояние"
-                placeholder="Состояние"
-                mt="md"
-              />
-            </Fieldset>
-            <Text size="sm" mt="xl">
-              Инициатива
-            </Text>
-            <Slider value={initiative} onChange={setInitiative} defaultValue={40} labelAlwaysOn />
-            <Text size="sm" mt="xl">
-              HP
-            </Text>
-            <Slider value={health} onChange={setHealth} defaultValue={40} labelAlwaysOn />
-            <Switch
-              onChange={(event) => setIsPlayer(event.currentTarget.checked)}
-              defaultChecked
-              label="Игровой персонаж"
+        <>
+          <Fieldset legend="Personal information">
+            <TextInput
+              value={name}
+              onChange={(event) => setName(event.currentTarget.value)}
+              label="Your name"
+              placeholder="Your name"
             />
-            <button onClick={handleSave}>сохранить</button>
-          </>
-        }
+            <NumberInput
+              value={ac}
+              onChange={(value) => setAc(Number(value) || 0)}
+              variant="filled"
+              size="xs"
+              radius="md"
+              label="класс брони"
+              description="AC"
+            />
+            <TextInput
+              value={status}
+              onChange={(event) => setStatus(event.currentTarget.value)}
+              label="Состояние"
+              placeholder="Состояние"
+              mt="md"
+            />
+          </Fieldset>
+          <Text size="sm" mt="xl">
+            Инициатива
+          </Text>
+          <Slider value={initiative} onChange={setInitiative} defaultValue={40} labelAlwaysOn />
+          <Text size="sm" mt="xl">
+            HP
+          </Text>
+          <Slider value={health} onChange={setHealth} defaultValue={40} labelAlwaysOn />
+          <Switch
+            onChange={(event) => setIsPlayer(event.currentTarget.checked)}
+            defaultChecked
+            label="Игровой персонаж"
+          />
+          <button type="button" onClick={handleSave}>
+            сохранить
+          </button>
+        </>
       </Modal>
     </>
   );

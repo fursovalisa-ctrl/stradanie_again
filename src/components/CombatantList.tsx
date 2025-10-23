@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { IconCircleCheck } from '@tabler/icons-react';
 import { List, ThemeIcon } from '@mantine/core';
 import { CombatCard } from './CombatCard';
@@ -22,36 +21,22 @@ const CombatList: React.FC<CombatListProps> = ({ array, editModal }) => {
           </ThemeIcon>
         }
       >
-        {array.map((p) => (
-          // <List.Item key={p.id}>
-          //   <CombatCard
-          //     isEdit={editModal}
-          //     name={p.name}
-          //     init={p.init}
-          //     hp={p.hp}
-          //     ac={p.ac}
-          //     conditions={p.conditions}
-          //     isPlayer={p.isPlayer}
-          //     defeated={false}
-          //   />
-          // </List.Item>
-          <List>
-            {array.map((playerItem) => (
-              <List.Item key={playerItem.id}>
-                <CombatCard
-                  name={playerItem.name}
-                  init={playerItem.init}
-                  hp={playerItem.hp}
-                  ac={playerItem.ac}
-                  conditions={playerItem.conditions}
-                  isPlayer={playerItem.isPlayer}
-                  defeated={playerItem.defeated}
-                  isEdit={() => editModal(playerItem)}
-                />
-              </List.Item>
-            ))}
-          </List>
-        ))}
+        <List>
+          {array.map((playerItem) => (
+            <List.Item key={playerItem.id}>
+              <CombatCard
+                name={playerItem.name}
+                init={playerItem.init}
+                hp={playerItem.hp}
+                ac={playerItem.ac}
+                conditions={playerItem.conditions}
+                isPlayer={playerItem.isPlayer}
+                defeated={playerItem.defeated}
+                isEdit={() => editModal(playerItem)}
+              />
+            </List.Item>
+          ))}
+        </List>
       </List>
     </div>
   );

@@ -20,3 +20,4 @@ export const players = [
     init:100
   },
 ];
+

@@ -3,7 +3,7 @@ import CombatList from '@/components/CombatantList';
 import { Modalwindow, Player } from '@/components/Modal';
 import Header from '../components/Header';
 
-const TrackerPage: React.FC = (props) => {
+const TrackerPage: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const STORAGE_KEY = 'combat-tracker-players';
   const [sortedPlayers, setSortedPlayers] = useState<Player[]>([]);
