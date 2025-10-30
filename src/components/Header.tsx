@@ -1,14 +1,23 @@
-import { useState } from 'react';
-import { Button } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { Button, Divider, Group, Title } from '@mantine/core';
 
 interface HeaderProps {
-  // onNext: () => void;
-  // onPrev: () => void;
   onAdd: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ onAdd }) => {
   const [round, setRound] = useState(0);
+
+  useEffect(() => {
+    const savedRound = localStorage.getItem('currentRound');
+    if (savedRound) {
+      setRound(Number(savedRound));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('currentRound', round.toString());
+  }, [round]);
 
   const hendlerRound = (operation: 'increase' | 'decrease') => {
     if (operation === 'increase') {
@@ -20,31 +29,40 @@ const Header: React.FC<HeaderProps> = ({ onAdd }) => {
 
   return (
     <>
-      <Button
-        onClick={() => hendlerRound('decrease')}
-        variant="filled"
-        color="gray"
-        size="xl"
-        radius="xl"
-      >
-        Prev
-      </Button>
+      <Group justify="space-evenly" mt="md" mb="xs">
+        <Button
+          onClick={() => hendlerRound('decrease')}
+          variant="filled"
+          color="gray"
+          size="xl"
+          radius="xl"
+        >
+          Prev
+        </Button>
 
-      <Button
-        onClick={() => hendlerRound('increase')}
-        variant="filled"
-        color="gray"
-        size="xl"
-        radius="xl"
-      >
-        Next
-      </Button>
+        <Button
+          onClick={() => hendlerRound('increase')}
+          variant="filled"
+          color="gray"
+          size="xl"
+          radius="xl"
+        >
+          Next
+        </Button>
 
-      <Button variant="filled" color="gray" size="xl" radius="xl" onClick={onAdd}>
-        Add
-      </Button>
-
-      <p>{round}</p>
+        <Button variant="filled" color="gray" size="xl" radius="xl" onClick={onAdd}>
+          Add
+        </Button>
+      </Group>
+      <Divider
+        my="xs"
+        labelPosition="center"
+        label={
+          <Title ta="center" order={3}>
+            Раунд {round}
+          </Title>
+        }
+      />
     </>
   );
 };

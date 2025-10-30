@@ -1,12 +1,18 @@
 import '@mantine/core/styles.css';
 
-import { MantineProvider } from '@mantine/core';
+import { createTheme, MantineProvider } from '@mantine/core';
 import { Router } from './Router';
-import { theme } from './theme';
+
+// import { theme } from './theme';
+
+const theme = createTheme({
+  fontFamily: 'Open Sans, sans-serif',
+  primaryColor: 'cyan',
+});
 
 export default function App() {
   return (
-    <MantineProvider theme={theme}>
+    <MantineProvider defaultColorScheme="dark" theme={theme}>
       <Router />
     </MantineProvider>
   );

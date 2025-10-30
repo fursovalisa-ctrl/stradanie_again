@@ -66,12 +66,32 @@ const TrackerPage: React.FC = () => {
     console.log('Новый игрок добавлен:', playerData);
   };
 
+  const handleEditHP = (playerId: number, change: number) => {
+    const updatedPlayers = sortedPlayers.map((player) =>
+      player.id === playerId ? { ...player, hp: Math.max(0, player.hp + change) } : player
+    );
+
+    setSortedPlayers(updatedPlayers);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers));
+  };
+  const handleDefeated = (playerId: number) => {
+    const updatedDefeated = sortedPlayers.map((player) =>
+      player.id === playerId ? { ...player, defeated: !player.defeated } : player
+    );
+
+    setSortedPlayers(updatedDefeated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDefeated));
+  };
+
   return (
     <>
       <Header onAdd={() => handleOpenModal('newPlayer')} />
       <CombatList
         array={sortedPlayers}
         editModal={(playerData: Player) => handleOpenModal('upDatePlayer', playerData)}
+        onPlusHP={handleEditHP}
+        onMinusHP={handleEditHP}
+        editDefeated={handleDefeated}
       />
       <Modalwindow
         opened={isOpen}
