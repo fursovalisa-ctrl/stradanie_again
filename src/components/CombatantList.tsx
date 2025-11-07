@@ -9,6 +9,7 @@ interface CombatListProps {
   onPlusHP: (playerId: number, change: number) => void;
   onMinusHP: (playerId: number, change: number) => void;
   editDefeated: (playerId: number) => void;
+  brosokEffect: (operation: 'green' | 'red', playerId: number) => void;
 }
 
 const CombatList: React.FC<CombatListProps> = ({
@@ -17,6 +18,7 @@ const CombatList: React.FC<CombatListProps> = ({
   onPlusHP,
   onMinusHP,
   editDefeated,
+  brosokEffect,
 }) => {
   return (
     <div>
@@ -37,13 +39,14 @@ const CombatList: React.FC<CombatListProps> = ({
               init={playerItem.init}
               hp={playerItem.hp}
               ac={playerItem.ac}
-              conditions={playerItem.hp === 0 ? 'без сознания' : playerItem.conditions}
+              conditions={playerItem.conditions}
               isPlayer={playerItem.isPlayer}
               defeated={playerItem.defeated}
               isEdit={() => editModal(playerItem)}
               plusHP={() => onPlusHP(playerItem.id, 1)}
               minusHP={() => onMinusHP(playerItem.id, -1)}
               toggleDefeated={() => editDefeated(playerItem.id)}
+              brosok={brosokEffect}
               arrayItem={playerItem}
             />
           </List.Item>

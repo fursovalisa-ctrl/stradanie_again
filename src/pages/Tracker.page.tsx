@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import CombatList from '@/components/CombatantList';
 import { Modalwindow, Player } from '@/components/Modal';
+// import { editHp } from '@/utils/tracker';
 import Header from '../components/Header';
 
 const TrackerPage: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); //открытие модалки
   const STORAGE_KEY = 'combat-tracker-players';
-  const [sortedPlayers, setSortedPlayers] = useState<Player[]>([]);
-  const [player, setPlayer] = useState<Player | null>(null);
+  const [sortedPlayers, setSortedPlayers] = useState<Player[]>([]); //изменение массива
+  const [player, setPlayer] = useState<Player | null>(null); // новый игрок или редактирование
 
   const handleOpenModal = (operation: 'newPlayer' | 'upDatePlayer', playerData?: Player) => {
     if (operation === 'newPlayer') {
@@ -16,7 +17,34 @@ const TrackerPage: React.FC = () => {
       setPlayer(playerData ?? null);
     }
     setIsOpen(true);
+  }; //есть ли данные для редактирования или создаем игрока с 0
+
+  const handleBrosok = (operation: 'green' | 'red', playerId: number) => {
+    if (operation === 'green') {
+      handleEditHP(playerId, 1);
+      handleDefeated(playerId, 'green');
+    } else {
+      handleDefeated(playerId, 'red');
+    }
   };
+  const handleDefeated = (playerId: number, operation?: 'green' | 'red') => {
+    let updatedDefeated;
+    if (operation === 'red') {
+      updatedDefeated = sortedPlayers.map((player) =>
+        player.id === playerId ? { ...player, defeated: true } : player
+      );
+    } else if (operation === 'green') {
+      updatedDefeated = sortedPlayers.map((player) =>
+        player.id === playerId ? { ...player, defeated: false } : player
+      );
+    } else {
+      updatedDefeated = sortedPlayers.map((player) =>
+        player.id === playerId ? { ...player, defeated: !player.defeated } : player
+      );
+    }
+    setSortedPlayers(updatedDefeated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDefeated));
+  }; //значок помер
 
   useEffect(() => {
     const loadPlayers = () => {
@@ -36,7 +64,7 @@ const TrackerPage: React.FC = () => {
     };
 
     loadPlayers();
-  }, []);
+  }, []); //загружаем игроков из массива и сортируем по инициативе
 
   const handleSaveEdit = (editedPlayer: Player) => {
     const updatedPlayers = sortedPlayers.map((p) => (p.id === editedPlayer.id ? editedPlayer : p));
@@ -44,7 +72,7 @@ const TrackerPage: React.FC = () => {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers));
     setIsOpen(false);
-  };
+  }; //изменения в данных игрока
 
   useEffect(() => {
     const savePlayers = () => {
@@ -57,7 +85,7 @@ const TrackerPage: React.FC = () => {
     };
 
     savePlayers();
-  }, [sortedPlayers]);
+  }, [sortedPlayers]); //сохранение игрока
 
   const handleSavePlayer = (playerData: Player) => {
     setSortedPlayers((prev) => [...prev, playerData]);
@@ -67,21 +95,19 @@ const TrackerPage: React.FC = () => {
   };
 
   const handleEditHP = (playerId: number, change: number) => {
-    const updatedPlayers = sortedPlayers.map((player) =>
-      player.id === playerId ? { ...player, hp: Math.max(0, player.hp + change) } : player
-    );
+    const updatedPlayers = sortedPlayers.map((player) => {
+      if (player.id === playerId) {
+        return {
+          ...player,
+          hp: Math.max(0, player.hp + change), // защита от отрицательного HP
+        };
+      }
+      return player; // остальные игроки без изменений
+    });
 
     setSortedPlayers(updatedPlayers);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers));
-  };
-  const handleDefeated = (playerId: number) => {
-    const updatedDefeated = sortedPlayers.map((player) =>
-      player.id === playerId ? { ...player, defeated: !player.defeated } : player
-    );
-
-    setSortedPlayers(updatedDefeated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDefeated));
-  };
+  }; //здоровье
 
   return (
     <>
@@ -92,6 +118,7 @@ const TrackerPage: React.FC = () => {
         onPlusHP={handleEditHP}
         onMinusHP={handleEditHP}
         editDefeated={handleDefeated}
+        brosokEffect={handleBrosok}
       />
       <Modalwindow
         opened={isOpen}

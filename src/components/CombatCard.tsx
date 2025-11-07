@@ -1,7 +1,113 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IconBallpenFilled, IconMinus, IconPlus, IconSkull } from '@tabler/icons-react';
-import { Button, Card, Flex, Grid, ThemeIcon, Title } from '@mantine/core';
+import { Button, Card, Flex, Grid, Radio, Stack, Text, ThemeIcon, Title } from '@mantine/core';
 import { Player } from './Modal';
+
+interface SpasBrosokProps {
+  onBrosokComplete: (operation: 'green' | 'red') => void;
+}
+
+const SpasBrosok: React.FC<SpasBrosokProps> = ({ onBrosokComplete }) => {
+  const [value, setValue] = useState<string>('');
+  const [nextValue, setNextValue] = useState<string>('');
+  const [otherValue, setOtherValue] = useState<string>('');
+
+  useEffect(() => {
+    if (value && nextValue && otherValue) {
+      if (value === 'green' && nextValue === 'green' && otherValue === 'green') {
+        onBrosokComplete('green');
+        setValue('');
+        setNextValue('');
+        setOtherValue('');
+      } else if (value === 'red' && nextValue === 'red' && otherValue === 'red') {
+        onBrosokComplete('red');
+        setValue('');
+        setNextValue('');
+        setOtherValue('');
+      }
+    }
+  }, [value, nextValue, otherValue, onBrosokComplete]);
+
+  return (
+    <>
+      <Text pt="lg">Сдохни или умри</Text>
+      <Flex>
+        <Radio.Group value={value} onChange={setValue} p="xs" m="xs">
+          <Stack gap="xs">
+            <Radio
+              value="green"
+              data-clickable="true"
+              color="green"
+              styles={{
+                radio: {
+                  borderColor: 'green',
+                },
+              }}
+            />
+            <Radio
+              data-clickable="true"
+              value="red"
+              color="red"
+              styles={{
+                radio: {
+                  borderColor: 'red',
+                },
+              }}
+            />
+          </Stack>
+        </Radio.Group>
+        <Radio.Group value={nextValue} onChange={setNextValue} p="xs" m="xs">
+          <Stack gap="xs">
+            <Radio
+              data-clickable="true"
+              value="green"
+              color="green"
+              styles={{
+                radio: {
+                  borderColor: 'green',
+                },
+              }}
+            />
+            <Radio
+              data-clickable="true"
+              value="red"
+              color="red"
+              styles={{
+                radio: {
+                  borderColor: 'red',
+                },
+              }}
+            />
+          </Stack>
+        </Radio.Group>
+        <Radio.Group value={otherValue} onChange={setOtherValue} p="xs" m="xs">
+          <Stack gap="xs">
+            <Radio
+              data-clickable="true"
+              value="green"
+              color="green"
+              styles={{
+                radio: {
+                  borderColor: 'green',
+                },
+              }}
+            />
+            <Radio
+              data-clickable="true"
+              value="red"
+              color="red"
+              styles={{
+                radio: {
+                  borderColor: 'red',
+                },
+              }}
+            />
+          </Stack>
+        </Radio.Group>
+      </Flex>
+    </>
+  );
+};
 
 interface CombatCardProps {
   name: string;
@@ -15,6 +121,7 @@ interface CombatCardProps {
   plusHP: () => void;
   minusHP: () => void;
   toggleDefeated: () => void;
+  brosok: (operation: 'green' | 'red', playerId: number) => void;
   arrayItem: Player;
 }
 
@@ -28,15 +135,33 @@ export const CombatCard: React.FC<CombatCardProps> = ({
   plusHP,
   minusHP,
   toggleDefeated,
+  brosok,
   arrayItem,
 }) => {
-  const [isClicked, setIsClicked] = useState(false);
+  const [isClicked, setIsClicked] = useState(false); //активная карточка
   const handleCardClick = (event) => {
-    if (event.target.tagName === 'Button' || event.target.closest('button')) {
+    if (
+      event.target.tagName === 'BUTTON' ||
+      event.target.closest('button') ||
+      event.target.closest('[data-clickable="true"]')
+    ) {
       return;
     }
     setIsClicked(!isClicked);
   };
+
+  const handleEditConditions = () => {
+    if (hp === 0) {
+      return 'без сознания';
+    }
+    return conditions;
+  };
+  const currentConditions = handleEditConditions();
+
+  const handleBrosokComplete = (operation: 'green' | 'red') => {
+    brosok(operation, arrayItem.id);
+  };
+
   return (
     <>
       <Card
@@ -45,7 +170,7 @@ export const CombatCard: React.FC<CombatCardProps> = ({
         onClick={handleCardClick}
         shadow="sm"
         padding="xl"
-        bg={isClicked ? 'rgba(0, 0, 0, 0.88)' : 'rgba(255, 255, 255, 0)'}
+        bg={isClicked ? 'rgba(0, 0, 0, 0.88)' : 'rgba(255, 255, 255, 0)'} // клик на кнопку не отражается на активности карточки
       >
         <Grid mb="lg" align="center">
           <Grid.Col span={11}>
@@ -87,8 +212,11 @@ export const CombatCard: React.FC<CombatCardProps> = ({
         </Grid>
 
         <Grid mb="md" align="center">
-          <Grid.Col span={11}>
-            <div>Conditions: {conditions}</div>
+          <Grid.Col pb="lg" span={11}>
+            <div>Conditions:{currentConditions}</div>
+            {currentConditions === 'без сознания' && (
+              <SpasBrosok onBrosokComplete={handleBrosokComplete} />
+            )}
           </Grid.Col>
           <Grid.Col span={1}>
             <Button onClick={toggleDefeated} variant="filled" color="rgba(255, 255, 255, 0)">

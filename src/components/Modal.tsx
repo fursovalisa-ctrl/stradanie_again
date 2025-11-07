@@ -10,6 +10,7 @@ export interface Player {
   conditions: string;
   isPlayer: boolean;
   defeated: boolean;
+  isActive?: boolean;
 }
 
 interface ModalProps {
