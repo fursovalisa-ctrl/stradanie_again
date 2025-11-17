@@ -123,6 +123,7 @@ interface CombatCardProps {
   toggleDefeated: () => void;
   brosok: (operation: 'green' | 'red', playerId: number) => void;
   arrayItem: Player;
+  isActive: boolean;
 }
 
 export const CombatCard: React.FC<CombatCardProps> = ({
@@ -137,18 +138,19 @@ export const CombatCard: React.FC<CombatCardProps> = ({
   toggleDefeated,
   brosok,
   arrayItem,
+  isActive,
 }) => {
-  const [isClicked, setIsClicked] = useState(false); //активная карточка
-  const handleCardClick = (event) => {
-    if (
-      event.target.tagName === 'BUTTON' ||
-      event.target.closest('button') ||
-      event.target.closest('[data-clickable="true"]')
-    ) {
-      return;
-    }
-    setIsClicked(!isClicked);
-  };
+  // const [isClickedActive, setIsClickedActive] = useState(isActive); //активная карточка
+  // const handleCardClick = (event) => {
+  //   if (
+  //     event.target.tagName === 'BUTTON' ||
+  //     event.target.closest('button') ||
+  //     event.target.closest('[data-clickable="true"]')
+  //   ) {
+  //     return;
+  //   }
+  //   setIsClicked(!isClicked);
+  // };
 
   const handleEditConditions = () => {
     if (hp === 0) {
@@ -167,17 +169,21 @@ export const CombatCard: React.FC<CombatCardProps> = ({
       <Card
         style={{ width: 600 }}
         withBorder
-        onClick={handleCardClick}
+        // onClick={handleCardClick}
         shadow="sm"
         padding="xl"
-        bg={isClicked ? 'rgba(0, 0, 0, 0.88)' : 'rgba(255, 255, 255, 0)'} // клик на кнопку не отражается на активности карточки
+        bg={isActive ? 'rgba(0, 0, 0, 0.88)' : 'rgba(255, 255, 255, 0)'} // клик на кнопку не отражается на активности карточки
       >
         <Grid mb="lg" align="center">
           <Grid.Col span={11}>
             <Title order={2}>{name}</Title>
           </Grid.Col>
           <Grid.Col span={1}>
-            <Button onClick={isEdit} variant="filled" color="rgba(255, 255, 255, 0)">
+            <Button
+              onClick={(e) => isEdit(arrayItem, e)}
+              variant="filled"
+              color="rgba(255, 255, 255, 0)"
+            >
               <ThemeIcon color="rgba(255, 255, 255, 0)" size={34} radius="xl">
                 <IconBallpenFilled size={25} />
               </ThemeIcon>

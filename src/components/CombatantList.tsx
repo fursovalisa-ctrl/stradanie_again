@@ -1,5 +1,6 @@
 import { IconAssembly } from '@tabler/icons-react';
 import { List, ThemeIcon } from '@mantine/core';
+import { useTrackerStore } from '@/stores/useTrackerStore';
 import { CombatCard } from './CombatCard';
 import { Player } from './Modal';
 
@@ -13,13 +14,14 @@ interface CombatListProps {
 }
 
 const CombatList: React.FC<CombatListProps> = ({
-  array,
   editModal,
   onPlusHP,
   onMinusHP,
   editDefeated,
   brosokEffect,
 }) => {
+  const { sortedPlayers } = useTrackerStore();
+  console.log(sortedPlayers);
   return (
     <div>
       <List
@@ -32,7 +34,7 @@ const CombatList: React.FC<CombatListProps> = ({
           </ThemeIcon>
         }
       >
-        {array.map((playerItem) => (
+        {sortedPlayers?.map((playerItem) => (
           <List.Item key={playerItem.id}>
             <CombatCard
               name={playerItem.name}
@@ -48,6 +50,7 @@ const CombatList: React.FC<CombatListProps> = ({
               toggleDefeated={() => editDefeated(playerItem.id)}
               brosok={brosokEffect}
               arrayItem={playerItem}
+              isActive
             />
           </List.Item>
         ))}

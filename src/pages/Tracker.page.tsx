@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import CombatList from '@/components/CombatantList';
 import { Modalwindow, Player } from '@/components/Modal';
+import { useTrackerStore } from '@/stores/useTrackerStore';
 // import { editHp } from '@/utils/tracker';
 import Header from '../components/Header';
 
 const TrackerPage: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false); //открытие модалки
+  const { setIsModalOpen, sortedPlayers, setSortedPlayers, player, setPlayer } = useTrackerStore();
   const STORAGE_KEY = 'combat-tracker-players';
-  const [sortedPlayers, setSortedPlayers] = useState<Player[]>([]); //изменение массива
-  const [player, setPlayer] = useState<Player | null>(null); // новый игрок или редактирование
 
   const handleOpenModal = (operation: 'newPlayer' | 'upDatePlayer', playerData?: Player) => {
     if (operation === 'newPlayer') {
@@ -16,35 +15,46 @@ const TrackerPage: React.FC = () => {
     } else {
       setPlayer(playerData ?? null);
     }
-    setIsOpen(true);
+    setIsModalOpen(true);
   }; //есть ли данные для редактирования или создаем игрока с 0
+  const handleEditHP = (array: Player[]) => (playerId: number, change: number) => {
+    const updatedPlayers = array?.map((player) => {
+      if (player.id === playerId) {
+        return {
+          ...player,
+          hp: Math.max(0, player.hp + change), // защита от отрицательного HP
+        };
+      }
+      return player; // остальные игроки без изменений
+    });
+
+    return updatedPlayers;
+  }; //здоровье
 
   const handleBrosok = (operation: 'green' | 'red', playerId: number) => {
     if (operation === 'green') {
-      handleEditHP(playerId, 1);
-      handleDefeated(playerId, 'green');
+      const data = handleEditHP(sortedPlayers)(playerId, 1);
+      const result = handleDefeated(data)(playerId, 'green');
+      setSortedPlayers(result);
     } else {
-      handleDefeated(playerId, 'red');
+      const result = handleDefeated(sortedPlayers)(playerId, 'red');
+      setSortedPlayers(result);
     }
   };
-  const handleDefeated = (playerId: number, operation?: 'green' | 'red') => {
-    let updatedDefeated;
-    if (operation === 'red') {
-      updatedDefeated = sortedPlayers.map((player) =>
-        player.id === playerId ? { ...player, defeated: true } : player
-      );
-    } else if (operation === 'green') {
-      updatedDefeated = sortedPlayers.map((player) =>
-        player.id === playerId ? { ...player, defeated: false } : player
-      );
-    } else {
-      updatedDefeated = sortedPlayers.map((player) =>
-        player.id === playerId ? { ...player, defeated: !player.defeated } : player
-      );
-    }
-    setSortedPlayers(updatedDefeated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDefeated));
+  const handleDefeated = (array: Player[]) => (playerId: number, operation?: 'green' | 'red') => {
+    const updatedDefeated = array.map((player) => {
+      const defeated = operation === 'red';
+      return player.id === playerId
+        ? { ...player, defeated: operation ? defeated : !player.defeated }
+        : player;
+    });
+    return updatedDefeated;
   }; //значок помер
+
+  const handleHP = (id: number, change: number) => {
+    const result = handleEditHP(sortedPlayers)(id, change);
+    return setSortedPlayers(result);
+  };
 
   useEffect(() => {
     const loadPlayers = () => {
@@ -67,17 +77,15 @@ const TrackerPage: React.FC = () => {
   }, []); //загружаем игроков из массива и сортируем по инициативе
 
   const handleSaveEdit = (editedPlayer: Player) => {
-    const updatedPlayers = sortedPlayers.map((p) => (p.id === editedPlayer.id ? editedPlayer : p));
+    const updatedPlayers = sortedPlayers?.map((p) => (p.id === editedPlayer.id ? editedPlayer : p));
     setSortedPlayers(updatedPlayers);
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers));
-    setIsOpen(false);
+    setIsModalOpen(false);
   }; //изменения в данных игрока
 
   useEffect(() => {
     const savePlayers = () => {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(sortedPlayers));
         console.log('Сохранено игроков:', sortedPlayers.length);
       } catch (error) {
         console.error('Ошибка сохранения в localStorage:', error);
@@ -88,26 +96,11 @@ const TrackerPage: React.FC = () => {
   }, [sortedPlayers]); //сохранение игрока
 
   const handleSavePlayer = (playerData: Player) => {
-    setSortedPlayers((prev) => [...prev, playerData]);
-    setIsOpen(false);
+    setSortedPlayers([...sortedPlayers, playerData]);
+    setIsModalOpen(false);
 
     console.log('Новый игрок добавлен:', playerData);
   };
-
-  const handleEditHP = (playerId: number, change: number) => {
-    const updatedPlayers = sortedPlayers.map((player) => {
-      if (player.id === playerId) {
-        return {
-          ...player,
-          hp: Math.max(0, player.hp + change), // защита от отрицательного HP
-        };
-      }
-      return player; // остальные игроки без изменений
-    });
-
-    setSortedPlayers(updatedPlayers);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers));
-  }; //здоровье
 
   return (
     <>
@@ -115,16 +108,18 @@ const TrackerPage: React.FC = () => {
       <CombatList
         array={sortedPlayers}
         editModal={(playerData: Player) => handleOpenModal('upDatePlayer', playerData)}
-        onPlusHP={handleEditHP}
-        onMinusHP={handleEditHP}
-        editDefeated={handleDefeated}
+        onPlusHP={handleHP}
+        onMinusHP={handleHP}
+        editDefeated={(id) => setSortedPlayers(handleDefeated(sortedPlayers)(id))}
         brosokEffect={handleBrosok}
       />
       <Modalwindow
-        opened={isOpen}
         onSave={player ? handleSaveEdit : handleSavePlayer}
-        onClose={() => setIsOpen(false)}
         player={player}
+        opened={false}
+        onClose={function (): void {
+          throw new Error('Function not implemented.');
+        }}
       />
     </>
   );

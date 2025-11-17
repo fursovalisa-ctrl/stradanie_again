@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Fieldset, Modal, NumberInput, Slider, Switch, Text, TextInput } from '@mantine/core';
+import { useTrackerStore } from '@/stores/useTrackerStore';
 
 export interface Player {
   id: number;
@@ -20,7 +21,8 @@ interface ModalProps {
   player?: Player | null;
 }
 
-export const Modalwindow: React.FC<ModalProps> = ({ opened, onSave, onClose, player }) => {
+export const Modalwindow: React.FC<ModalProps> = ({ onSave, player }) => {
+  const { isModalOpen, setIsModalOpen } = useTrackerStore();
   const [name, setName] = useState(player?.name || '');
   const [initiative, setInitiative] = useState(player?.init || 10);
   const [health, setHealth] = useState(player?.hp || 0);
@@ -29,7 +31,7 @@ export const Modalwindow: React.FC<ModalProps> = ({ opened, onSave, onClose, pla
   const [isPlayer, setIsPlayer] = useState(player?.isPlayer ?? true);
 
   useEffect(() => {
-    if (opened) {
+    if (isModalOpen) {
       if (player) {
         setName(player.name);
         setInitiative(player.init);
@@ -46,11 +48,11 @@ export const Modalwindow: React.FC<ModalProps> = ({ opened, onSave, onClose, pla
         setIsPlayer(true);
       }
     }
-  }, [opened, player]);
+  }, [isModalOpen, player]);
 
   const handleSave = () => {
     if (name.trim().length === 0) {
-      alert('Введите имя');
+      // alert('Введите имя');
       return;
     }
 
@@ -75,12 +77,12 @@ export const Modalwindow: React.FC<ModalProps> = ({ opened, onSave, onClose, pla
     setAc(10);
     setStatus('');
     setIsPlayer(true);
-    onClose();
+    setIsModalOpen(false);
   };
 
   return (
     <>
-      <Modal opened={opened} onClose={handleClose}>
+      <Modal opened={isModalOpen} onClose={handleClose}>
         <>
           <Fieldset legend="Personal information">
             <TextInput
